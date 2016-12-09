@@ -92,6 +92,7 @@ let print_turn_1card (p : player, c : card) = printfn "* %O VS player %O" c p
 /// Prints the information of 2 players when both have no cards. Call this function at each turn no cards have been drawn.
 let print_turn_no_cards (p1 : player, p2 : player) = printfn "* Both %O and %O have no cards" p1 p2
 
+let print_turn_no_cards1 (p1 : player, p2 : player) = printfn "* Both %O and %O have no mano" p1 p2
 /// Prints the information of a dead cards. Call this function when a card dies.
 let print_card_death (c : card) = printfn "+ %O died (%d overkill)" { c with health = 0 } -c.health
 
@@ -189,7 +190,7 @@ let fight (deck1 : deck) (deck2 : deck) : player * player * int =
 
             |c1,c2 when c1= empty_card && c2 = empty_card -> print_turn_no_cards (p1,p2) //p1 e p2 hanno finito le carte
                                                              quit<-true
-            |c1,c2 when c1= non_mana && c2= non_mana -> print_turn_no_cards (p1,p2)      
+            |c1,c2 when c1= non_mana && c2= non_mana -> print_turn_no_cards1 (p1,p2)      
                  
             |c1,c2 when c1.typee="niente" && c2.typee="MINION" -> print_turn_1card (p1,c2) 
                                                                   p1.life <- p1.life-c2.attack //c1 non ha niente, c2 ha la carta
