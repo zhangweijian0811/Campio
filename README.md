@@ -175,8 +175,8 @@ let rec pesca_carta_definitiva (deck : card list) (mana : int) : card =
 
 //Combattimento 
 let fight (deck1 : deck) (deck2 : deck) : player * player * int =
-    let p1 = { name ="P1"; life = 30; deck = filter_deck deck1 }    
-    let p2 = { name ="P2"; life = 30; deck = filter_deck deck2 }
+    let p1 = { name ="P1"; life = 30; deck = filter_deck deck2 }    
+    let p2 = { name ="P2"; life = 30; deck = filter_deck deck1 }
 
     let mutable turn = 1 //variabile contatore del turno
     let mutable quit = false //flag per uscita d'emergenza dal ciclo
@@ -191,11 +191,12 @@ let fight (deck1 : deck) (deck2 : deck) : player * player * int =
             |c1,c2 when c1= empty_card && c2 = empty_card -> print_turn_no_cards (p1,p2) //p1 e p2 hanno finito le carte
                                                              quit<-true
             |c1,c2 when c1= non_mana && c2= non_mana -> print_turn_no_cards1 (p1,p2)      
-                 
+
+            |c1,c2 when c1.typee="MINION" && c2.typee="niente" -> print_turn_1card (p2,c1) 
+                                                                  p2.life <- p2.life-c1.attack //c1 ha la carta, c2 non ha niente     
             |c1,c2 when c1.typee="niente" && c2.typee="MINION" -> print_turn_1card (p1,c2) 
                                                                   p1.life <- p1.life-c2.attack //c1 non ha niente, c2 ha la carta
-            |c1,c2 when c2.typee="MINION" && c2.typee="niente" -> print_turn_1card (p2,c1) 
-                                                                  p2.life <- p2.life-c1.attack //c1 ha la carta, c2 non ha niente            
+                        
             |_,_-> if c1.attack > c2.health && c2.attack > c1.health && c1.typee="MINION" && c2.typee="MINION" //se il attack di c1 grande di il health di c2 e il attack di c2 grande di il health di c1
                       then print_turn_2cards (c1,c2) 
                            p1.life <- p1.life - (c2.attack - c1.health) 
