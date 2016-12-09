@@ -195,7 +195,7 @@ let fight (deck1 : deck) (deck2 : deck) : player * player * int =
                                                                   p1.life <- p1.life-c2.attack //c1 non ha niente, c2 ha la carta
             |c1,c2 when c2.typee="MINION" && c2.typee="niente" -> print_turn_1card (p2,c1) 
                                                                   p2.life <- p2.life-c1.attack //c1 ha la carta, c2 non ha niente            
-            |_,_-> if c1.attack >= c2.health && c2.attack >= c1.health && c1.typee<>"niente" && c2.typee<>"niente" //se il attack di c1 grande di il health di c2 e il attack di c2 grande di il health di c1
+            |_,_-> if c1.attack > c2.health && c2.attack > c1.health && c1.typee="MINION" && c2.typee="MINION" //se il attack di c1 grande di il health di c2 e il attack di c2 grande di il health di c1
                       then print_turn_2cards (c1,c2) 
                            p1.life <- p1.life - (c2.attack - c1.health) 
                            p2.life <- p2.life - (c1.attack - c2.health)
@@ -204,24 +204,65 @@ let fight (deck1 : deck) (deck2 : deck) : player * player * int =
                            p1.deck<- togliere_morto p1.deck c1
                            p2.deck<- togliere_morto p2.deck c2
 
-                      elif c1.attack >= c2.health && c2.attack <= c1.health && c1.typee<>"niente" && c2.typee<>"niente"// se il attack di c1 grande di il health di c2 e il attack di c2 piccolo di il health di c1
+                      elif c1.attack > c2.health && c2.attack = c1.health && c1.typee="MINION" && c2.typee="MINION"// se il attack di c1 grande di il health di c2 e il attack di c2 piccolo di il health di c1
                         then print_turn_2cards (c1,c2) 
+                             p1.life<- p1.life
+                             p2.life<- p2.life - (c1.attack - c2.health)
+                             print_card_death c1
+                             print_card_death c2
+                             p1.deck<- togliere_morto p1.deck c1
+                             p2.deck<- togliere_morto p2.deck c2
+
+                      elif c1.attack > c2.health && c2.attack < c1.health && c1.typee="MINION" && c2.typee="MINION"// se il attack di c1 grande di il health di c2 e il attack di c2 piccolo di il health di c1
+                        then print_turn_2cards (c1,c2) 
+                             p1.life<- p1.life
                              p2.life<- p2.life - (c1.attack - c2.health)
                              print_card_death c2
                              p2.deck<- togliere_morto p2.deck c2
-                  
-                      elif c1.attack <= c2.health && c2.attack >= c1.health && c1.typee<>"niente" && c2.typee<>"niente" // se il attack di c1 piccolo di il health di c2 e il attack di c2 grande di il health di c1
+
+                      elif c1.attack < c2.health && c2.attack > c1.health && c1.typee="MINION" && c2.typee="MINION" // se il attack di c1 piccolo di il health di c2 e il attack di c2 grande di il health di c1
                          then print_turn_2cards (c1,c2) 
                               p1.life<- p1.life - (c2.attack - c1.health)
+                              p2.life<- p2.life
+                              print_card_death c1
+                              p1.deck<- togliere_morto p1.deck c1
+                      
+                      elif c1.attack < c2.health && c2.attack = c1.health && c1.typee="MINION" && c2.typee="MINION" // se il attack di c1 piccolo di il health di c2 e il attack di c2 grande di il health di c1
+                         then print_turn_2cards (c1,c2) 
+                              p1.life<- p1.life - (c2.attack - c1.health)
+                              p2.life<- p2.life
                               print_card_death c1
                               p1.deck<- togliere_morto p1.deck c1
                  
-                     elif c1.attack < c2.health && c2.attack < c1.health && c1.typee<>"niente" && c2.typee<>"niente" // se loro devono attacarsi molte volte
+                     elif c1.attack < c2.health && c2.attack < c1.health && c1.typee="MINION" && c2.typee="MINION" // se loro devono attacarsi molte volte
                          then print_turn_2cards (c1,c2) 
                               p1.life<- p1.life
                               p2.life<- p2.life
                               c1.health<-c1.health-c2.attack
-                              c2.health<-c2.health-c1.attack      
+                              c2.health<-c2.health-c1.attack  
+
+                     elif c1.attack = c2.health && c2.attack > c1.health && c1.typee="MINION" && c2.typee="MINION" // se il attack di c1 piccolo di il health di c2 e il attack di c2 grande di il health di c1
+                         then print_turn_2cards (c1,c2) 
+                              p1.life<- p1.life - (c2.attack - c1.health)
+                              p2.life<- p2.life 
+                              print_card_death c1
+                              p1.deck<- togliere_morto p1.deck c1
+
+                     elif c1.attack = c2.health && c2.attack < c1.health && c1.typee="MINION" && c2.typee="MINION" // se il attack di c1 piccolo di il health di c2 e il attack di c2 grande di il health di c1
+                         then print_turn_2cards (c1,c2) 
+                              p1.life<- p1.life
+                              p2.life<- p2.life
+                              print_card_death c2
+                              p1.deck<- togliere_morto p1.deck c2
+                                            
+                     elif c1.attack = c2.health && c2.attack = c1.health && c1.typee="MINION" && c2.typee="MINION" // se loro devono attacarsi molte volte
+                         then print_turn_2cards (c1,c2) 
+                              p1.life<- p1.life
+                              p2.life<- p2.life
+                              print_card_death c1
+                              print_card_death c2
+                              p1.deck<- togliere_morto p1.deck c1
+                              p2.deck<- togliere_morto p2.deck c2           
                                              
 
           print_turn_end (p1,p2)
